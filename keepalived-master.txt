@@ -10,6 +10,14 @@ global_defs {
     smtp_connect_timeout 30
 }
 
+# VRRP script to add VIP to loopback interface
+vrrp_script add_vip {
+    script "ip addr add 192.168.1.36/32 dev lo"
+    interval 2
+    fall 2
+    rise 2
+}
+
 # VRRP instance for VIP
 vrrp_instance VI_K8S {
     state MASTER
@@ -23,6 +31,9 @@ vrrp_instance VI_K8S {
     }
     virtual_ipaddress {
         192.168.1.36/24
+    }
+    track_script {
+        add_vip
     }
 }
 
