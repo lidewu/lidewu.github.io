@@ -1,0 +1,65 @@
+# Global definitions
+global_defs {
+    router_id K8S_HA_MASTER
+    enable_script_security
+    notification_email {
+        admin@example.com  # 替換為你的通知郵箱
+    }
+    notification_email_from keepalived@example.com
+    smtp_server 127.0.0.1
+    smtp_connect_timeout 30
+}
+
+# VRRP instance for VIP
+vrrp_instance VI_K8S {
+    state MASTER
+    interface eth0  # 替換為你的網絡接口，例如 ens33 或 eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass k8s123456  # 替換為你的安全密碼
+    }
+    virtual_ipaddress {
+        192.168.1.36/24
+    }
+}
+
+# Virtual server configuration for Kubernetes API
+virtual_server 192.168.1.36 6443 {
+    delay_loop 6
+    lb_algo rr  # Round-Robin 負載均衡
+    lb_kind NAT # NAT 模式，根據需要可改為 DR
+    persistence_timeout 50
+    protocol TCP
+
+    # Real servers (Kubernetes nodes)
+    real_server 192.168.1.30 6443 {
+        weight 1
+        TCP_CHECK {
+            connect_timeout 3
+            connect_port 6443
+            retry 3
+            delay_before_retry 3
+        }
+    }
+    real_server 192.168.1.31 6443 {
+        weight 1
+        TCP_CHECK {
+            connect_timeout 3
+            connect_port 6443
+            retry 3
+            delay_before_retry 3
+        }
+    }
+    real_server 192.168.1.32 6443 {
+        weight 1
+        TCP_CHECK {
+            connect_timeout 3
+            connect_port 6443
+            retry 3
+            delay_before_retry 3
+        }
+    }
+}
