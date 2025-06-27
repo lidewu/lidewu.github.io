@@ -30,7 +30,7 @@ vrrp_instance VI_K8S {
 virtual_server 192.168.1.36 6443 {
     delay_loop 6
     lb_algo rr  # Round-Robin 負載均衡
-    lb_kind NAT # NAT 模式，根據需要可改為 DR
+    lb_kind DR # NAT 模式，根據需要可改為 DR
     persistence_timeout 50
     protocol TCP
 
