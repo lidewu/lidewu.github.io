@@ -13,7 +13,7 @@ global_defs {
 # VRRP instance for VIP
 vrrp_instance VI_K8S {
     state MASTER
-    interface eth0  # 替換為你的網絡接口，例如 ens33 或 eth0
+    interface enp6s18  # 替換為你的網絡接口，例如 ens33 或 eth0
     virtual_router_id 51
     priority 100
     advert_int 1
