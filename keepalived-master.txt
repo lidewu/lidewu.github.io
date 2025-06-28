@@ -10,13 +10,6 @@ global_defs {
     smtp_connect_timeout 30
 }
 
-# VRRP script to add VIP to loopback interface
-vrrp_script add_vip {
-    script "ip addr add 192.168.1.36/32 dev lo"
-    interval 2
-    fall 2
-    rise 2
-}
 
 # VRRP instance for VIP
 vrrp_instance VI_K8S {
@@ -31,17 +24,14 @@ vrrp_instance VI_K8S {
     }
     virtual_ipaddress {
         192.168.1.36/24
-    }
-    track_script {
-        add_vip
-    }
+    }  
 }
 
 # Virtual server configuration for Kubernetes API
 virtual_server 192.168.1.36 6443 {
     delay_loop 6
     lb_algo rr  # Round-Robin 負載均衡
-    lb_kind DR # NAT 模式，根據需要可改為 DR
+    lb_kind NAT # NAT 模式，根據需要可改為 DR
     persistence_timeout 50
     protocol TCP
 
